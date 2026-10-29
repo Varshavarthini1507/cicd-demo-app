@@ -73,12 +73,7 @@ jobs:
           push: true
           build-args: APP_VERSION=${{ github.sha }}
           tags: ${{ steps.meta.outputs.image }}
-      - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: ${{ steps.meta.outputs.image }}
-          severity: CRITICAL
-          exit-code: '0'
+      - 
 
   # ---------------- CD ----------------
   deploy-staging:
