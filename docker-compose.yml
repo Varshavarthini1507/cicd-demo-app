@@ -1,0 +1,9 @@
+# Run the app locally: docker compose up --build
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - APP_VERSION=local
+    restart: unless-stopped

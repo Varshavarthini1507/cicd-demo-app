@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CI/CD Demo App</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 3rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.5rem; }
+    form { display: flex; gap: .5rem; margin-bottom: 1rem; }
+    input { flex: 1; padding: .5rem; }
+    button { padding: .5rem 1rem; cursor: pointer; }
+    li { display: flex; justify-content: space-between; padding: .4rem 0; border-bottom: 1px solid #ddd; }
+    .badge { font-size: .8rem; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Task Manager (CI/CD Demo)</h1>
+  <p class="badge" id="version"></p>
+  <form id="form">
+    <input id="title" placeholder="New task" required>
+    <button>Add</button>
+  </form>
+  <ul id="list"></ul>
+  <script>
+    async function load() {
+      const tasks = await (await fetch('/api/tasks')).json();
+      list.innerHTML = '';
+      tasks.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t.title;
+        const b = document.createElement('button');
+        b.textContent = 'Delete';
+        b.onclick = async () => { await fetch('/api/tasks/' + t.id, { method: 'DELETE' }); load(); };
+        li.appendChild(b);
+        list.appendChild(li);
+      });
+    }
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: title.value }) });
+      title.value = '';
+      load();
+    };
+    fetch('/health').then(r => r.json()).then(h => version.textContent = 'Version: ' + h.version);
+    load();
+  </script>
+</body>
+</html>
